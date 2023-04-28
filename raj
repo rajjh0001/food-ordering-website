@@ -1,0 +1,97 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct MenuItem {
+    string name;
+    double price;
+};
+
+class Menu {
+private:
+    vector<MenuItem> items;
+
+public:
+    void addItem(string name, double price) {
+        MenuItem item;
+        item.name = name;
+        item.price = price;
+        items.push_back(item);
+    }
+
+    void print() {
+        for (auto item : items) {
+            cout << item.name << " - $" << item.price << endl;
+        }
+    }
+
+    vector<MenuItem> getItems() {
+        return items;
+    }
+};
+
+class Order {
+private:
+    vector<MenuItem> items;
+    double total = 0;
+
+public:
+    void addItem(MenuItem item) {
+        items.push_back(item);
+        total += item.price;
+    }
+
+    void print() {
+        cout << "Order Items:" << endl;
+        for (auto item : items) {
+            cout << item.name << " - $" << item.price << endl;
+        }
+        cout << "Total: $" << total << endl;
+    }
+
+    double getTotal() {
+        return total;
+    }
+};
+
+int main() {
+    // Create a menu
+    Menu menu;
+    menu.addItem("Hamburger", 5.99);
+    menu.addItem("Cheeseburger", 6.99);
+    menu.addItem("French Fries", 2.99);
+    menu.addItem("Onion Rings", 3.99);
+    menu.addItem("Soda", 1.99);
+
+    // Display the menu
+    cout << "Menu:" << endl;
+    menu.print();
+
+    // Create an order
+    Order order;
+
+    // Ask the user to make selections
+    string input;
+    do {
+        cout << "Enter item name to add to order (or 'done' to finish): ";
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input != "done") {
+            vector<MenuItem> items = menu.getItems();
+            auto item = find_if(items.begin(), items.end(), [&input](const MenuItem& m) { return m.name == input; });
+            if (item != items.end()) {
+                order.addItem(*item);
+            } else {
+                cout << "Invalid item name. Please try again." << endl;
+            }
+        }
+    } while (input != "done");
+
+    // Display the order
+    order.print();
+
+    return 0;
+}
